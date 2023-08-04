@@ -20,6 +20,21 @@ app.config['UPLOADS'] = UPLOADS #Guardamos la ruta como un valor en la app
 
 mysql.init_app(app)
 
+conn = mysql.connect()
+cursor = conn.cursor()
+
+#Funcion para las consultas a la base de datos.
+
+def queryMySql(query, data = ()):
+    if len(data) > 0:
+        cursor.execute(query, data)
+    else:
+        cursor.execute(query)
+
+    conn.commit()
+
+
+
 #Muestro la foto en la tabla
 @app.route('/fotodeusuario/<path:nombreFoto>')
 def uploads(nombreFoto):
@@ -27,9 +42,6 @@ def uploads(nombreFoto):
 
 @app.route('/')
 def index():
-    
-    conn = mysql.connect()
-    cursor = conn.cursor()
 
     # sql = "Insert into empleados (nombre, correo, foto) values ('Camila','cami@email.com','foto.jpge');"
 
@@ -63,21 +75,24 @@ def store():
     sql = "INSERT INTO empleados (nombre, correo, foto) values (%s, %s, %s)"
     datos = (_nombre, _correo, nuevoNombreFoto)
 
-    conn = mysql.connect()
-    cursor = conn.cursor()
-    cursor.execute(sql, datos)
-    conn.commit()
+    #Utilizamos la funcion creada en el inicio.
+    queryMySql(sql, datos)
+
+    
+    # conn = mysql.connect()
+    # cursor = conn.cursor()
+    # cursor.execute(sql, datos)
+    # conn.commit()
 
     return redirect('/')
 
 
 @app.route("/delete/<int:id>")
 def delete (id):
-    conn = mysql.connect()
-    cursor = conn.cursor()
 
     sql = f"SELECT foto FROM empleados where id='{id}'"
-    cursor.execute(sql)
+    # cursor.execute(sql)
+    queryMySql(sql)
     nombreFoto = cursor.fetchone()[0]
 
     try:
@@ -85,23 +100,17 @@ def delete (id):
     except:
         pass
 
-    sql = "DELETE FROM empleados WHERE id=%s" #O podemos usar fstrings
-    cursor.execute(sql, id)
-
-    conn.commit()
+    sql = f"DELETE FROM empleados WHERE id={id}" #O podemos usar fstrings
+    queryMySql(sql)
 
     return redirect("/")
 
 @app.route("/modify/<int:id>")
 def modify (id):
     sql =  f"SELECT * from empleados where id = {id}"
-    conn = mysql.connect()
-    cursor = conn.cursor()
-    cursor.execute(sql)
+    queryMySql(sql)
 
     empleado = cursor.fetchone() #NOS GUARDAMOS EL EMPLEADO
-
-    conn.commit()
 
     return render_template("empleados/edit.html", empleado = empleado)
 
@@ -113,9 +122,6 @@ def update():
     _foto = request.files["txtFoto"]
     id = request.form["txtId"]
 
-    conn = mysql.connect()
-    cursor = conn.cursor()
-
     if _foto.filename != "":
         now = datetime.now() #Fecha actual
         tiempo = now.strftime("%Y%H%M%S") #Convertimos la fecha en string
@@ -123,8 +129,7 @@ def update():
         _foto.save("src/uploads/" + nuevoNombreFoto)
 
         sql =  f"SELECT foto FROM empleados WHERE id = {id}"
-        cursor.execute(sql)
-        conn.commit()
+        queryMySql(sql)
 
         nombreFoto = cursor.fetchone()[0]
         # borrarEstaFoto = os.path.join(app.config["UPLOADS"], nombreFoto)
@@ -134,12 +139,10 @@ def update():
             pass
 
         sql = f"UPDATE empleados set foto = '{nuevoNombreFoto}' WHERE id = '{id}'"
-        cursor.execute(sql)
-        conn.commit()
+        queryMySql(sql)
 
     sql = f"UPDATE empleados set nombre = '{_nombre}', correo = '{_correo}' WHERE id = '{id}'"
-    cursor.execute(sql)
-    conn.commit()
+    queryMySql(sql)
 
     return redirect("/")
 
