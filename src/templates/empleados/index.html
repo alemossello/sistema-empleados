@@ -1,9 +1,7 @@
 {% include 'header.html' %}
 
-<h1>HOLA FLASK!</h1>
-
-<table>
-    <thead>
+<table class="table table-dark">
+    <thead class="thead-dark">
         <tr>
             <th>#</th>
             <th>Nombre</th>
@@ -18,13 +16,14 @@
             <td>{{empleado[0]}}</td>
             <td>{{empleado[1]}}</td>
             <td>{{empleado[2]}}</td>
-            <td>{{empleado[3]}}</td>
             <td>
-                |
-                <a href="/modify/{{empleado[0]}}">Editar</a>
-                |
-                <a href="/delete/{{empleado[0]}}">Borrar</a>
-                |
+
+                <img width="100" src="fotodeusuario/{{empleado[3]}}" alt="foto perfil">
+
+            </td>
+            <td>
+                <a class="btn btn-warning" href="/modify/{{empleado[0]}}">Editar</a>
+                <a class="btn btn-danger" href="/delete/{{empleado[0]}}">Borrar</a>
             </td>
         </tr>
         <!-- Cerramos el for -->

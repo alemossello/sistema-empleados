@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import render_template, request, redirect
+from flask import render_template, request, redirect, url_for, send_from_directory
 from flaskext.mysql import MySQL
 from datetime import datetime
 import os
@@ -20,6 +20,10 @@ app.config['UPLOADS'] = UPLOADS #Guardamos la ruta como un valor en la app
 
 mysql.init_app(app)
 
+#Muestro la foto en la tabla
+@app.route('/fotodeusuario/<path:nombreFoto>')
+def uploads(nombreFoto):
+    return send_from_directory(os.path.join('UPLOADS'), nombreFoto)
 
 @app.route('/')
 def index():
@@ -124,8 +128,10 @@ def update():
 
         nombreFoto = cursor.fetchone()[0]
         # borrarEstaFoto = os.path.join(app.config["UPLOADS"], nombreFoto)
-
-        os.remove(os.path.join(app.config['UPLOADS'], nombreFoto))
+        try:
+            os.remove(os.path.join(app.config['UPLOADS'], nombreFoto))
+        except:
+            pass
 
         sql = f"UPDATE empleados set foto = '{nuevoNombreFoto}' WHERE id = '{id}'"
         cursor.execute(sql)
