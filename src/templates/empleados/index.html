@@ -13,17 +13,17 @@
         {% for empleado in empleados %}
         <!-- Recorremos la variable que pasamos desde py aplicando Jinja2 -->
         <tr>
-            <td>{{empleado[0]}}</td>
-            <td>{{empleado[1]}}</td>
-            <td>{{empleado[2]}}</td>
+            <td>{{empleado.id}}</td>
+            <td>{{empleado.nombre}}</td>
+            <td>{{empleado.correo}}</td>
             <td>
 
-                <img width="100" src="fotodeusuario/{{empleado[3]}}" alt="foto perfil">
+                <img width="100" src="fotodeusuario/{{empleado.foto}}" alt="foto perfil">
 
             </td>
             <td>
-                <a class="btn btn-warning" href="/modify/{{empleado[0]}}">Editar</a>
-                <a class="btn btn-danger" href="/delete/{{empleado[0]}}">Borrar</a>
+                <a class="btn btn-warning" href="/modify/{{empleado.id}}">Editar</a>
+                <a id="btnBorrar" class="btn btn-danger" href="/delete/{{empleado.id}}">Borrar</a>
             </td>
         </tr>
         <!-- Cerramos el for -->
